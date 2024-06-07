@@ -1,4 +1,11 @@
 !#bin/bash
+username = $USER
+date = date
+hostname = $HOSTNAME
+source /etc/os-release
+osname = $PRETTY_NANME
+uptime = uptime
+
 
 
 cat <<EOF
