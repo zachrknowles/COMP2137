@@ -1,12 +1,12 @@
 #!bin/bash
 username=$USER
-date=`date`
+date=`(date +%c)`
 hostname=$HOSTNAME
 source /etc/os-release
 osname=$PRETTY_NAME
-timeup=`uptime`
+timeup=`uptime -p`
 ufwrules=`sudo ufw status`
-cpu=`sudo lshw -C cpu | grep version
+cpu=`sudo lshw -C cpu | grep version`
 
 
 
@@ -22,7 +22,7 @@ Uptime: $timeup
  
 Hardware Information
 --------------------
-cpu: PROCESSOR MAKE AND MODEL
+cpu: PROCESSOR MAKE AND MODEL $cpu
 Speed: CURRENT AND MAXIMUM CPU SPEED
 Ram: SIZE OF INSTALLED RAM
 Disk(s): MAKE AND MODEL AND SIZE FOR ALL INSTALLED DISKS
