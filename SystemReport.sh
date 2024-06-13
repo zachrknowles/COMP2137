@@ -6,7 +6,7 @@ source /etc/os-release
 osname=$PRETTY_NAME
 timeup=`uptime -p`
 ufwrules=`sudo ufw status`
-cpu=`sudo lshw -C cpu | grep version`
+cpu=`lscpu | grep 'Model name: '| awk -F ': ' ' {print $2} ')`
 
 
 
