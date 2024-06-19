@@ -1,13 +1,13 @@
-#!bin/bash
+#!/bin/bash
 username=$USER
-date=`(date +%c)`
+date=$(date +%c)
 hostname=$HOSTNAME
 source /etc/os-release
 osname=$PRETTY_NAME
-timeup=`uptime -p`
-ufwrules=`sudo ufw status`
-cpu=`lscpu | grep 'Model name: '| awk -F ': ' ' {print $2} ')`
-
+timeup=$(uptime -p)
+#ufwrules=`sudo ufw status`
+cpu=$(lscpu | grep 'Model name: '| awk -F ': ' ' {print $2} ')
+cpuspeed=$(watch -n 1 "grep '^[c]pu MHz' /proc/cpuinfo")
 
 
 cat <<EOF
@@ -23,7 +23,7 @@ Uptime: $timeup
 Hardware Information
 --------------------
 cpu: PROCESSOR MAKE AND MODEL $cpu
-Speed: CURRENT AND MAXIMUM CPU SPEED
+Speed:$cpuspeed
 Ram: SIZE OF INSTALLED RAM
 Disk(s): MAKE AND MODEL AND SIZE FOR ALL INSTALLED DISKS
 Video: MAKE AND MODEL OF VIDEO CARD
@@ -46,6 +46,6 @@ Process Count: N
 Load Averages: N, N, N
 Memory Allocation: DATA FROM FREE
 Listening Network Ports: N, N, N, ...
-UFW Rules:$ufwstatus
+UFW Rules:
 
 EOF
