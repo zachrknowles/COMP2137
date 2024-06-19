@@ -1,13 +1,27 @@
 #!/bin/bash
 username=$USER
 date=$(date +%c)
-hostname=$HOSTNAME
+hostname=$(hostname -s)
 source /etc/os-release
 osname=$PRETTY_NAME
 timeup=$(uptime -p)
-#ufwrules=`sudo ufw status`
 cpu=$(lscpu | grep 'Model name: '| awk -F ': ' ' {print $2} ')
-cpuspeed=$(watch -n 1 "grep '^[c]pu MHz' /proc/cpuinfo")
+cpuspeed=$(sudo dmidecode -t processor | grep -m 1 "Max Speed")
+ramsize=$(free -m | grep Mem: | awk '{print $2}')
+installeddisks=$(lsblk -dno KNAME,TYPE,SIZE,MODEL)
+installedvideocard=$(lspci -v | grep VGA -A 3)
+domainname=$(dnsdomainname)
+FQDN=$hostname.$domainname
+hostaddress=$(getent ahosts "$HOSTNAME" | grep STREAM | head -n 1 | cut -d ' ' -f1)
+gateway=$(ip route show default | grep default | awk '{print $3}')
+dns=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
+loggedinusers=$(who | awk '{print $1}')
+diskspace=$(df -hP | grep -v "^Filesystem" | awk '{print $1, $5}')
+processCount=$(ps aux | wc -l)
+loadAverages=$(uptime | awk '{print $NF-2, $NF-1, $NF}')
+memoryAllocation=$(free -m | grep Mem: | awk '{print $2, $3, $4}')
+listeningNetworkPorts=$(ss -ltn | grep LISTEN)
+ufwRules=$(ufw status verbose)
 
 
 cat <<EOF
@@ -22,30 +36,30 @@ Uptime: $timeup
  
 Hardware Information
 --------------------
-cpu: PROCESSOR MAKE AND MODEL $cpu
+cpu:  $cpu
 Speed:$cpuspeed
-Ram: SIZE OF INSTALLED RAM
-Disk(s): MAKE AND MODEL AND SIZE FOR ALL INSTALLED DISKS
-Video: MAKE AND MODEL OF VIDEO CARD
+Ram: $ramsize     
+Disk(s): $installeddisks
+Video: $installedvideocard
  
 Network Information
 -------------------
-FQDN: FQDN
-Host Address: IP ADDRESS FOR THE HOSTNAME
-Gateway IP: GATEWAY ADDRESS
-DNS Server: IP OF DNS SERVER
+FQDN: $FQDN
+Host Address:  $hostaddress
+Gateway IP:  $gateway
+DNS Server:   $dns
  
 InterfaceName: MAKE AND MODEL OF NETWORK CARD
 IP Address: IP Address in CIDR format
  
 System Status
 -------------
-Users Logged In: USER,USER,USER...
-Disk Space: FREE SPACE FOR LOCAL FILESYSTEMS IN FORMAT: /MOUNTPOINT N
-Process Count: N
-Load Averages: N, N, N
-Memory Allocation: DATA FROM FREE
-Listening Network Ports: N, N, N, ...
-UFW Rules:
+Users Logged In: $loggedinusers
+Disk Space: $diskspace
+Process Count: $processCount
+Load Averages: $loadAverages
+Memory Allocation:  $memoryAllocation
+Listening Network Ports:  $listeningNetworkPorts
+UFW Rules:$ufwRules
 
 EOF
