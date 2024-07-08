@@ -27,6 +27,15 @@ sudo apt-get install -y squid
 else
 echo 'squid is already insalled'
 fi
+#checking if UFW is installed
+if ! dpkg -s ufw >/dev/null 2>&1; then
+echo "UFW is not installed. Installing..."
+sudo apt-get update
+sudo apt-get install -y ufw
+else
+echo "UFW is already installed."
+fi
+
 #checks ufw status
 ufw_status=$(ufw status verbose |grep -i 'Status active')
 
