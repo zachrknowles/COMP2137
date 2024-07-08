@@ -50,17 +50,23 @@ fi
 if ! ufw status | grep -q "\<OpenSSH\>"; then
 echo "Allowing SSH.."
 sudo ufw allow 22
+else
+echo "port 22 already allowed skipping..."
 fi
 
 #Check and allow HTTP (port 80)
 if ! ufw status | grep -q "\<http\>" then
 echo "Allowing HTTP..."
 sudo ufw allow 80
+else
+echo "port 80 already allowed skipping..."
 fi
 
 # Check and allow web proxy (port 3128)
 if ! ufw status | grep -q "\www\>" then
 echo "allowing web proxy..."
 sudo ufw allow 3128
+else
+echo "port 3128 already allowed skipping..."
 fi
 echo "Firewall config complete."
