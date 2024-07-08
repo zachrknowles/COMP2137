@@ -58,7 +58,7 @@ fi
 if ! ufw status | grep -q "\<http\>" then
 echo "Allowing HTTP..."
 sudo ufw allow 80
-else 
+else
 echo "port 80 for http is already allowed"
 fi
 
