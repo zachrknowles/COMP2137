@@ -22,7 +22,7 @@ network:
         eth1:
             addresses: [172.16.1.200/24]
 EOF
-sudo netplan apply >/dev/null
+sudo netplan apply >/dev/null 2>&1
 echo "updated succfully, ip now set to $new_ip."
 fi
 
@@ -78,3 +78,20 @@ sudo ufw allow 80/tcp
 echo "allowing web proxy..."
 sudo ufw allow 3128
 echo "Firewall config complete."
+#checks if the user dennis exits and adds user if not
+if id "dennis" >dev/null 2>&1; then
+echo "User dennis already exists"
+else
+useradd dennis
+fi
+# checks if user dennis is already in the sudo group and adds him if not
+if groups "dennis" | grep -q sudo; then
+echo "User Dennis is already in the sudo group skipping..."
+else
+sudo usermod -a -G sudo "dennis"
+if [ $? -eq -0 ]; then
+echo "user dennis has been added to the sudo group"
+else
+echo "error adding user dennis to the sudo group"
+fi
+fi
