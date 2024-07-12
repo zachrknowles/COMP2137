@@ -57,15 +57,15 @@ ufw_status=$(sudo ufw status verbose |grep -i 'Status active')
 
 if [[ -z '$ufw_status' ]]; then
 echo "UFW is not enabled Enabling"
-sudo "UFW is already enabled."
+sudo ufw enable
 else
 echo "UFW is already enabled."
 fi
 
 # Check and allow SSH (port 22)
 if ! ufw status | grep -q "\<OpenSSH\>"; then
-echo "Allowing SSH.."
-sudo ufw allow 22/tcp
+echo "Allowing SSH.. on mgnt network only "
+sudo ufw allow prto tcp from 172.16.1.200 to any port 22
 else
 echo "port 22 already allowed skipping..."
 fi
