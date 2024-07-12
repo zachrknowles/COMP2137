@@ -53,7 +53,7 @@ echo "UFW is already installed."
 fi
 
 #checks ufw status
-ufw_status=$(ufw status verbose |grep -i 'Status active')
+ufw_status=$(sudo ufw status verbose |grep -i 'Status active')
 
 if [[ -z '$ufw_status' ]]; then
 echo "UFW is not enabled Enabling"
