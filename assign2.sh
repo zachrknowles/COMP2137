@@ -7,6 +7,22 @@ echo "IP Address for $HOSTNAME is already set to $new_ip."
 exit 0
 else 
 sed -i "/\b$hostname\b/s/[0-9.]*/$new_ip/" /etc/hosts
+cat > /etc/netplan/10-yxc.yaml << EOF
+network:
+    version: 2
+    ethernets:
+        eth0:
+            addresses: [192.168.1.21/24]
+            routes:
+              - to: default
+                via: 192.168.16.2
+            nameservers:
+                addresses: [192.168.16.2]
+                search: [home.arpa, localdomain]
+        eth1:
+            addresses: [172.16.1.200/24]
+EOF
+sudo netplan apply
 echo "updated succfully, ip now set to $new_ip."
 fi
 
@@ -49,7 +65,7 @@ fi
 # Check and allow SSH (port 22)
 if ! ufw status | grep -q "\<OpenSSH\>"; then
 echo "Allowing SSH.."
-sudo ufw allow 22
+sudo ufw allow 22/tcp
 else
 echo "port 22 already allowed skipping..."
 fi
@@ -57,7 +73,7 @@ fi
 #Check and allow HTTP (port 80)
 if ! ufw status | grep -q "\<http\>" then
 echo "Allowing HTTP..."
-sudo ufw allow 80
+sudo ufw allow 80/tcp
 else
 echo "port 80 already allowed skipping..."
 fi
