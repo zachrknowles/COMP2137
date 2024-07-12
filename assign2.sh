@@ -22,7 +22,7 @@ network:
         eth1:
             addresses: [172.16.1.200/24]
 EOF
-sudo netplan apply
+sudo netplan apply >/dev/null
 echo "updated succfully, ip now set to $new_ip."
 fi
 
@@ -53,36 +53,28 @@ echo "UFW is already installed."
 fi
 
 #checks ufw status
-ufw_status=$(sudo ufw status verbose |grep -i 'Status active')
-
-if [[ -z '$ufw_status' ]]; then
+ufw_status=$(sudo ufw status | grep -w "active" | wc -1)
+# enable UFW if it is not already enabled.
+if [$ufw_status -eq 0 ]; then
 echo "UFW is not enabled Enabling"
 sudo ufw enable
 else
 echo "UFW is already enabled."
 fi
 
+
 # Check and allow SSH (port 22)
-if ! ufw status | grep -q "\<OpenSSH\>"; then
-echo "Allowing SSH.. on mgnt network only "
-sudo ufw allow prto tcp from 172.16.1.200 to any port 22
-else
-echo "port 22 already allowed skipping..."
-fi
+echo "Allowing SSH only on the mgnt network..."
+sudo ufw allow from 172.16.1.200/24 to any port 22
+
+
 
 #Check and allow HTTP (port 80)
-if ! ufw status | grep -q "\<http\>" then
 echo "Allowing HTTP..."
 sudo ufw allow 80/tcp
-else
-echo "port 80 already allowed skipping..."
-fi
+
 
 # Check and allow web proxy (port 3128)
-if ! ufw status | grep -q "\www\>" then
 echo "allowing web proxy..."
 sudo ufw allow 3128
-else
-echo "port 3128 already allowed skipping..."
-fi
 echo "Firewall config complete."
