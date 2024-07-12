@@ -30,7 +30,7 @@ fi
 if ! dpkg -s apache2 > /dev/null 2>&1; then
 echo "Apache2 is not installed. Installing ..."
 sudo apt-get update 
-sudo apt-get install -y apache2
+sudo apt-get install -y apache2 >/dev/null
 else
 echo "Apache2 is already installed."
 fi
@@ -39,7 +39,7 @@ fi
 #Checking if Squid is installed and if not installing it
 if ! dpkg -s squid >/dev/null 2>&1; then
 echo "Squid is not installed. Installing..."
-sudo apt-get install -y squid
+sudo apt-get install -y squid >/dev/null
 else
 echo 'squid is already insalled'
 fi
@@ -47,7 +47,7 @@ fi
 if ! dpkg -s ufw >/dev/null 2>&1; then
 echo "UFW is not installed. Installing..."
 sudo apt-get update
-sudo apt-get install -y ufw
+sudo apt-get install -y ufw >/dev/null
 else
 echo "UFW is already installed."
 fi
