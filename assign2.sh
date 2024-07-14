@@ -31,6 +31,11 @@ if ! dpkg -s apache2 > /dev/null 2>&1; then
 echo "Apache2 is not installed. Installing ..."
 sudo apt-get update 
 sudo apt-get install -y apache2 >/dev/null
+if [$? -eq 0 ]; then 
+echo "apache 2 has been installed"
+else
+echo "problem installing apache2"
+fi
 else
 echo "Apache2 is already installed."
 fi
@@ -40,6 +45,11 @@ fi
 if ! dpkg -s squid >/dev/null 2>&1; then
 echo "Squid is not installed. Installing..."
 sudo apt-get install -y squid >/dev/null
+if [ $? -eq 0 ]; then
+echo "squid has been installed"
+else
+echo "problem installing squid"
+fi
 else
 echo 'squid is already insalled'
 fi
@@ -53,7 +63,7 @@ echo "UFW is already installed."
 fi
 
 #checks ufw status
-ufw_status=$(sudo ufw status | grep -w "active" | wc -1)
+ufw_status=$(sudo ufw status | grep -w "active")
 # enable UFW if it is not already enabled.
 if [$ufw_status -eq 0 ]; then
 echo "UFW is not enabled Enabling"
@@ -79,7 +89,7 @@ echo "allowing web proxy..."
 sudo ufw allow 3128
 echo "Firewall config complete."
 #checks if the user dennis exits and adds user if not
-if id "dennis" >dev/null 2>&1; then
+if id "dennis" > /dev/null 2>&1; then
 echo "User dennis already exists"
 else
 useradd dennis
@@ -95,3 +105,58 @@ else
 echo "error adding user dennis to the sudo group"
 fi
 fi
+# checks to see if dennis has a .ssh directory in his home directory and creates it if not
+if [ -d "/home/dennis/.ssh" ]; then
+echo "User dennis already has an .ssh directory."
+else
+mkdir -p "/home/dennis/.ssh" && chmod 700 "/home/dennis/.ssh"
+if [ $? -eq -0 ]; then
+echo ".ssh directed for user dennis created"
+else
+echo "error creating .ssh directory for user dennis."
+fi
+fi
+# Generates a rsa & ed25519 SSH Key and puts in in the .ssh directory
+ssh-keygen -t rsa -b 4096 -f /home/dennis/.ssh/id_rsa
+ssh-keygen -t ed25519 -f /home/user/dennis/.ssh/id_ed25519
+
+# puts the content of the previosly created public keys and puts them into the authroized_keys file
+cat /home/dennis/.ssh/id_rsa.pub > /home/user/dennis/.ssh/authroized_keys
+cat /home/dennis/.ssh/id_ed25519.pub > /home/user/dennis/.ssh/authroized_keys
+# adds the given ssh-ed25519 public key provided to the .ssh/authroized_keys file this allows the matching private key to authincate with the server.
+echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG4rT3vTt99Ox5kndS4HmgTrKBT8SKzhK4rhGkEVGlCI student@generic-vm" > /home/user/dennis/.ssh/authroized_keys
+
+#creates the rest of the users
+user_home="/home"
+users-(aubrey captain snibbles brownie scotter sandy perrier cindy tiger yoda)
+
+for user in "${users[@]}"; do
+#checks to make sure the user does not already exist
+if id "$user" > /dev/null 2>&1; then
+echo "User $user already exists, skipping..."
+contiune
+fi
+
+#creates the user with a default shell
+useradd -m -s /bin/bash "$user"
+
+# Creates the user's home directory
+mkdir -p "$user_home/$user"
+
+#generates RSA & ED25519 keypair
+
+ssh-keygen -t rsa -b 4096 -f "$user_home/$user/.ssh/id_rsa" -N "" $> /dev/null
+ssh-keygen -t ed25519 -f "$user_home/$user/.ssh/id_ed25519" -N "" $> /dev/null
+
+#sets ownership and permissions for the .ssh directory
+chmod 700 "$user_home/$user/.ssh"
+
+cat $user_home/$user/.ssh/id_rsa.pub > $user_home/$user/.ssh/authroized_keys
+cat $user_home/$user/.ssh/ed25519.pub > $user_home/$user/.ssh/authroized_keys
+
+# set ownership and permissons for authroized_keys
+chown $user:$user $user_home/$user/.ssh/authroized_keys
+chmod 600 $user_home/$user/.ssh/authroized_keys
+echo "user $user created succesfully."
+done
+echo "all user creations complete"
