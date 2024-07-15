@@ -120,6 +120,7 @@ fi
 ssh-keygen -t rsa -b 4096 -f /home/dennis/.ssh/id_rsa
 ssh-keygen -t ed25519 -f /home/user/dennis/.ssh/id_ed25519
 
+#error on line 124 & 125 & 128 & 132
 # puts the content of the previosly created public keys and puts them into the authroized_keys file
 cat /home/dennis/.ssh/id_rsa.pub > /home/user/dennis/.ssh/authroized_keys
 cat /home/dennis/.ssh/id_ed25519.pub > /home/user/dennis/.ssh/authroized_keys
