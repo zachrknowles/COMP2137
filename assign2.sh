@@ -1,6 +1,7 @@
 #!/bin/bash
 #changes the ip address
 new_ip="192.168.1.21"
+hostname=$HOSTNAME
 echo "updating the ip address"
 if grep -q "^$new_ip\t$HOSTNAME$" /etc/hosts; then
 echo "IP Address for $HOSTNAME is already set to $new_ip."
@@ -31,7 +32,7 @@ if ! dpkg -s apache2 > /dev/null 2>&1; then
 echo "Apache2 is not installed. Installing ..."
 sudo apt-get update 
 sudo apt-get install -y apache2 >/dev/null
-if [$? -eq 0 ]; then 
+if [ $? -eq 0 ]; then 
 echo "apache 2 has been installed"
 else
 echo "problem installing apache2"
@@ -65,7 +66,7 @@ fi
 #checks ufw status
 ufw_status=$(sudo ufw status | grep -w "active")
 # enable UFW if it is not already enabled.
-if [$ufw_status -eq 0 ]; then
+if [ $ufw_status -eq 0 ]; then
 echo "UFW is not enabled Enabling"
 sudo ufw enable
 else
@@ -117,25 +118,34 @@ echo "error creating .ssh directory for user dennis."
 fi
 fi
 # Generates a rsa & ed25519 SSH Key and puts in in the .ssh directory
-ssh-keygen -t rsa -b 4096 -f /home/dennis/.ssh/id_rsa
-ssh-keygen -t ed25519 -f /home/user/dennis/.ssh/id_ed25519
+ssh-keygen -t rsa -b 4096 -f /home/dennis/.ssh/id_rsa $> /dev/null
+ssh-keygen -t ed25519 -f /home/user/dennis/.ssh/id_ed25519 $> /dev/null
+#checks if a authorised_keys directory exists and creates it if not
+echo "checking to see if the authroized_keys folder exists"
+authroized_keys_file="/home/dennis/.ssh/authroized_keys"
+if [ -f "$authroized_keys_file"  ]; then
+echo "the authroized_keys folder exists skipping..."
+else
+echo "The authroized_keys file does not exist creating..."
+mkdir -p "/home/dennis/.ssh/authroized_keys"
+echo $?
+fi
 
-#error on line 124 & 125 & 128 & 132
 # puts the content of the previosly created public keys and puts them into the authroized_keys file
-cat /home/dennis/.ssh/id_rsa.pub > /home/user/dennis/.ssh/authroized_keys
-cat /home/dennis/.ssh/id_ed25519.pub > /home/user/dennis/.ssh/authroized_keys
+cat "/home/dennis/.ssh/id_rsa.pub" > "/home/user/dennis/.ssh/authroized_keys"
+cat "/home/dennis/.ssh/id_ed25519.pub" > "/home/user/dennis/.ssh/authroized_keys"
 # adds the given ssh-ed25519 public key provided to the .ssh/authroized_keys file this allows the matching private key to authincate with the server.
-echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG4rT3vTt99Ox5kndS4HmgTrKBT8SKzhK4rhGkEVGlCI student@generic-vm" > /home/user/dennis/.ssh/authroized_keys
+echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG4rT3vTt99Ox5kndS4HmgTrKBT8SKzhK4rhGkEVGlCI student@generic-vm" > "/home/user/dennis/.ssh/authroized_keys"
 
 #creates the rest of the users
 user_home="/home"
-users-(aubrey captain snibbles brownie scotter sandy perrier cindy tiger yoda)
+users=(aubrey captain snibbles brownie scotter sandy perrier cindy tiger yoda)
 
 for user in "${users[@]}"; do
 #checks to make sure the user does not already exist
 if id "$user" > /dev/null 2>&1; then
 echo "User $user already exists, skipping..."
-contiune
+continue 
 fi
 
 #creates the user with a default shell
@@ -146,18 +156,27 @@ mkdir -p "$user_home/$user"
 
 #generates RSA & ED25519 keypair
 
-ssh-keygen -t rsa -b 4096 -f "$user_home/$user/.ssh/id_rsa" -N "" $> /dev/null
-ssh-keygen -t ed25519 -f "$user_home/$user/.ssh/id_ed25519" -N "" $> /dev/null
+ssh-keygen -t rsa -b 4096 -f "$user_home/$user/.ssh/id_rsa"  $> /dev/null
+ssh-keygen -t ed25519 -f "$user_home/$user/.ssh/id_ed25519"  $> /dev/null
 
 #sets ownership and permissions for the .ssh directory
 chmod 700 "$user_home/$user/.ssh"
 
-cat $user_home/$user/.ssh/id_rsa.pub > $user_home/$user/.ssh/authroized_keys
-cat $user_home/$user/.ssh/ed25519.pub > $user_home/$user/.ssh/authroized_keys
+#checks if the authroized_keys directory exists and creates it if not
+loop_authroized_keys_file="$user_home/$user/.ssh/authroized_keys"
+if [ -f "$loop_authroized_keys_file" ]; then
+echo "the authroized_keys folder exists skipping..."
+else
+echo "The authroized_keys file does not exist creating..."
+mkdir -p $user_home/$user/.ssh/authroized_keys
+fi
+
+cat "$user_home/$user/.ssh/id_rsa.pub" > $user_home/$user/.ssh/authroized_keys
+cat "$user_home/$user/.ssh/ed25519.pub" > $user_home/$user/.ssh/authroized_keys
 
 # set ownership and permissons for authroized_keys
-chown $user:$user $user_home/$user/.ssh/authroized_keys
-chmod 600 $user_home/$user/.ssh/authroized_keys
+chown "$user:$user" "$user_home/$user/.ssh/authroized_keys"
+chmod 600 "$user_home/$user/.ssh/authroized_keys"
 echo "user $user created succesfully."
 done
 echo "all user creations complete"
