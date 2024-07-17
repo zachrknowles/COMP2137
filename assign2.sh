@@ -5,7 +5,6 @@ hostname=$HOSTNAME
 echo "updating the ip address"
 if grep -q "^$new_ip\t$HOSTNAME$" /etc/hosts; then
 echo "IP Address for $HOSTNAME is already set to $new_ip."
-exit 0
 else 
 sed -i "/\b$hostname\b/s/[0-9.]*/$new_ip/" /etc/hosts
 cat > /etc/netplan/10-yxc.yaml << EOF
@@ -30,7 +29,7 @@ fi
 #checking if apache2 is installed and installing it if not
 if ! dpkg -s apache2 > /dev/null 2>&1; then
 echo "Apache2 is not installed. Installing ..."
-sudo apt-get update 
+sudo apt-get update >/dev/null
 sudo apt-get install -y apache2 >/dev/null
 if [ $? -eq 0 ]; then 
 echo "apache 2 has been installed"
@@ -45,6 +44,7 @@ fi
 #Checking if Squid is installed and if not installing it
 if ! dpkg -s squid >/dev/null 2>&1; then
 echo "Squid is not installed. Installing..."
+sudo apt-get update >/dev/null
 sudo apt-get install -y squid >/dev/null
 if [ $? -eq 0 ]; then
 echo "squid has been installed"
@@ -57,7 +57,7 @@ fi
 #checking if UFW is installed
 if ! dpkg -s ufw >/dev/null 2>&1; then
 echo "UFW is not installed. Installing..."
-sudo apt-get update
+sudo apt-get update >/dev/null
 sudo apt-get install -y ufw >/dev/null
 else
 echo "UFW is already installed."
@@ -93,7 +93,8 @@ echo "Firewall config complete."
 if id "dennis" > /dev/null 2>&1; then
 echo "User dennis already exists"
 else
-useradd dennis
+useradd -m -s /bin/bash dennis
+mkdir -p "/home/dennis"
 fi
 # checks if user dennis is already in the sudo group and adds him if not
 if groups "dennis" | grep -q sudo; then
@@ -117,9 +118,7 @@ else
 echo "error creating .ssh directory for user dennis."
 fi
 fi
-# Generates a rsa & ed25519 SSH Key and puts in in the .ssh directory
-ssh-keygen -t rsa -b 4096 -f /home/dennis/.ssh/id_rsa $> /dev/null
-ssh-keygen -t ed25519 -f /home/user/dennis/.ssh/id_ed25519 $> /dev/null
+
 #checks if a authorised_keys directory exists and creates it if not
 echo "checking to see if the authroized_keys folder exists"
 authroized_keys_file="/home/dennis/.ssh/authroized_keys"
@@ -128,8 +127,11 @@ echo "the authroized_keys folder exists skipping..."
 else
 echo "The authroized_keys file does not exist creating..."
 mkdir -p "/home/dennis/.ssh/authroized_keys"
-echo $?
 fi
+# Generates a rsa & ed25519 SSH Key and puts in in the .ssh directory
+ssh-keygen -t rsa -N ""-f /home/dennis/.ssh/id_rsa 2>&1 /dev/null
+ssh-keygen -t ed25519 -N ""-f /home/user/dennis/.ssh/id_ed25519  2&>1 /dev/null
+
 
 # puts the content of the previosly created public keys and puts them into the authroized_keys file
 cat "/home/dennis/.ssh/id_rsa.pub" > "/home/user/dennis/.ssh/authroized_keys"
@@ -154,14 +156,6 @@ useradd -m -s /bin/bash "$user"
 # Creates the user's home directory
 mkdir -p "$user_home/$user"
 
-#generates RSA & ED25519 keypair
-
-ssh-keygen -t rsa -b 4096 -f "$user_home/$user/.ssh/id_rsa"  $> /dev/null
-ssh-keygen -t ed25519 -f "$user_home/$user/.ssh/id_ed25519"  $> /dev/null
-
-#sets ownership and permissions for the .ssh directory
-chmod 700 "$user_home/$user/.ssh"
-
 #checks if the authroized_keys directory exists and creates it if not
 loop_authroized_keys_file="$user_home/$user/.ssh/authroized_keys"
 if [ -f "$loop_authroized_keys_file" ]; then
@@ -170,6 +164,16 @@ else
 echo "The authroized_keys file does not exist creating..."
 mkdir -p $user_home/$user/.ssh/authroized_keys
 fi
+
+#generates RSA & ED25519 keypair
+
+ssh-keygen -t rsa -N ""-f "$user_home/$user/.ssh/id_rsa"   2&>1 /dev/null
+ssh-keygen -t ed25519 -N "" -f "$user_home/$user/.ssh/id_ed25519"  2&>1 /dev/null
+
+#sets ownership and permissions for the .ssh directory
+#chmod 700 "$user_home/$user/.ssh"
+
+
 
 cat "$user_home/$user/.ssh/id_rsa.pub" > $user_home/$user/.ssh/authroized_keys
 cat "$user_home/$user/.ssh/ed25519.pub" > $user_home/$user/.ssh/authroized_keys
