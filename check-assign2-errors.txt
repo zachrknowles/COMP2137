@@ -59,20 +59,20 @@ Saving key "/home/yoda/.ssh/id_ed25519" failed: Permission denied
 cat: /home/yoda/.ssh/id_rsa.pub: No such file or directory
 cat: /home/yoda/.ssh/id_ed25519.pub: No such file or directory
 
-** (generate:4047): WARNING **: 17:11:41.240: Permissions for /etc/netplan/10-yxc.yaml are too open. Netplan configuration should NOT be accessible by others.
+** (generate:4046): WARNING **: 17:20:24.569: Permissions for /etc/netplan/10-yxc.yaml are too open. Netplan configuration should NOT be accessible by others.
 WARNING:root:Cannot call Open vSwitch: ovsdb-server.service is not running.
 
-** (process:4045): WARNING **: 17:11:41.883: Permissions for /etc/netplan/10-yxc.yaml are too open. Netplan configuration should NOT be accessible by others.
+** (process:4044): WARNING **: 17:20:25.269: Permissions for /etc/netplan/10-yxc.yaml are too open. Netplan configuration should NOT be accessible by others.
 
-** (process:4045): WARNING **: 17:11:42.592: Permissions for /etc/netplan/10-yxc.yaml are too open. Netplan configuration should NOT be accessible by others.
+** (process:4044): WARNING **: 17:20:25.996: Permissions for /etc/netplan/10-yxc.yaml are too open. Netplan configuration should NOT be accessible by others.
 
-** (process:4045): WARNING **: 17:11:42.594: Permissions for /etc/netplan/10-yxc.yaml are too open. Netplan configuration should NOT be accessible by others.
+** (process:4044): WARNING **: 17:20:25.997: Permissions for /etc/netplan/10-yxc.yaml are too open. Netplan configuration should NOT be accessible by others.
 
-** (generate:4490): WARNING **: 17:11:48.401: Permissions for /etc/netplan/10-yxc.yaml are too open. Netplan configuration should NOT be accessible by others.
+** (generate:4490): WARNING **: 17:20:31.756: Permissions for /etc/netplan/10-yxc.yaml are too open. Netplan configuration should NOT be accessible by others.
 WARNING:root:Cannot call Open vSwitch: ovsdb-server.service is not running.
 
-** (process:4488): WARNING **: 17:11:49.116: Permissions for /etc/netplan/10-yxc.yaml are too open. Netplan configuration should NOT be accessible by others.
+** (process:4488): WARNING **: 17:20:32.569: Permissions for /etc/netplan/10-yxc.yaml are too open. Netplan configuration should NOT be accessible by others.
 
-** (process:4488): WARNING **: 17:11:49.836: Permissions for /etc/netplan/10-yxc.yaml are too open. Netplan configuration should NOT be accessible by others.
+** (process:4488): WARNING **: 17:20:33.308: Permissions for /etc/netplan/10-yxc.yaml are too open. Netplan configuration should NOT be accessible by others.
 
-** (process:4488): WARNING **: 17:11:49.836: Permissions for /etc/netplan/10-yxc.yaml are too open. Netplan configuration should NOT be accessible by others.
+** (process:4488): WARNING **: 17:20:33.309: Permissions for /etc/netplan/10-yxc.yaml are too open. Netplan configuration should NOT be accessible by others.
