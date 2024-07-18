@@ -22,6 +22,7 @@ network:
         eth1:
             addresses: [172.16.1.200/24]
 EOF
+chmod 644 /etc/netplan/10-yxc.yaml 
 sudo netplan apply >/dev/null 2>&1
 echo "updated succfully, ip now set to $new_ip."
 fi
