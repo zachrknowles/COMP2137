@@ -121,14 +121,14 @@ mkdir -p /home/dennis/.ssh
 fi
 
 #checks if a authorised_keys file exists and creates it if not
-echo "checking to see if the authroized_keys folder exists"
-authroized_keys_file="/home/dennis/.ssh/authroized_keys"
-if [ -f "$authroized_keys_file"  ]; then
-echo "the authroized_keys folder exists skipping..."
+echo "checking to see if the authorized_keys folder exists"
+authorized_keys_file="/home/dennis/.ssh/authorized_keys"
+if [ -f "$authorized_keys_file"  ]; then
+echo "the authorized_keys folder exists skipping..."
 else
-echo "The authroized_keys file does not exist creating..."
+echo "The authorized_keys file does not exist creating..."
 touch  /home/dennis/.ssh/authorized_keys
-
+fi 
 
 # set ownership and permissons for authorized_keys"
 chown "dennis:dennis" "/home/dennis/.ssh/authorized_keys"
@@ -179,24 +179,24 @@ mkdir -p $user_ssh_dir
 if [ $? -eq -0 ]; then
 echo ".ssh directory for user $user created"
 else
-echo "error creating .ssh directory for user dennis."
+echo "error creating .ssh directory for user $user."
 fi
 fi
-#creates the authroized_keys file
-#checks if the authroized_keys directory exists and creates it if not
-loop_authroized_keys_file="$user_home/$user/.ssh/authroized_keys"
-if [ -f "$loop_authroized_keys_file" ]; then
-echo "the authroized_keys folder exists skipping..."
+#creates the authorized_keys file
+#checks if the authorized_keys directory exists and creates it if not
+loop_authorized_keys_file="$user_home/$user/.ssh/authorized_keys"
+if [ -f "$loop_authorized_keys_file" ]; then
+echo "the authorized_keys folder exists skipping..."
 else
-echo "The authroized_keys file does not exist creating...
+echo "The authorized_keys file does not exist creating..."
 touch $user_ssh_dir/authorized_keys
-
+fi 
 # set ownership and permissons for authorized_keys"
-chown "$user:$user" "$user_ssh_dir/authorized_keys""
-chmod 600 "$user_ssh_dir/authorized_keys""
+chown "$user:$user" "$user_ssh_dir/authorized_keys"
+chmod 600 "$user_ssh_dir/authorized_keys"
 #set ownership and permissions of the .ssh directory
-chown $user:$user $user_ssh_dir
-chmod 700 $user_ssh_dir
+chown "$user:$user" "$user_ssh_dir"
+chmod 700 "$user_ssh_dir"
 echo "user $user created succesfully."
 #generates RSA & ED25519 keypair
 
@@ -204,6 +204,6 @@ sudo -u $user ssh-keygen -t rsa -N "" -f "$user_ssh_dir/id_rsa"  >/dev/null
 sudo -u $user ssh-keygen -t ed25519 -N "" -f "$user_ssh_dir/id_ed25519" >/dev/null 
 
 
-cat $user_ssh_dir/id_rsa.pub >> $user_ssh_dir/authorized_keys
-cat $user_ssh_dir/id_ed25519.pub >>$user_ssh_dir/authorized_keys
+cat $user_ssh_dir/id_rsa.pub >> "$user_ssh_dir/authorized_keys"
+cat $user_ssh_dir/id_ed25519.pub >> "$user_ssh_dir/authorized_keys"
 done
