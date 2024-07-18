@@ -112,8 +112,9 @@ else
 echo "error adding user dennis to the sudo group"
 fi
 fi
+dennis_ssh_dir="/home/dennis/.ssh"
 # checks to see if dennis has a .ssh directory in his home directory and creates it if not
-if [ -d "/home/dennis/.ssh" ]; then
+if [ -d "$dennis_ssh_dir" ]; then
 echo "User dennis already has an .ssh directory."
 else
 mkdir -p /home/dennis/.ssh
@@ -121,10 +122,10 @@ mkdir -p /home/dennis/.ssh
 fi
 
 #checks if a authorised_keys file exists and creates it if not
-echo "checking to see if the authorized_keys folder exists"
+echo "checking to see if the authorized_keys file exists"
 authorized_keys_file="/home/dennis/.ssh/authorized_keys"
-if [ -f "$authorized_keys_file"  ]; then
-echo "the authorized_keys folder exists skipping..."
+if ! [ -f "$authorized_keys_file"  ]; then
+echo "the authorized_keys file exists skipping..."
 else
 echo "The authorized_keys file does not exist creating..."
 touch  /home/dennis/.ssh/authorized_keys
@@ -138,9 +139,19 @@ chmod 600 "/home/dennis/.ssh/authorized_keys"
 chmod 700 "/home/dennis/.ssh"
 chown dennis:dennis /home/dennis/.ssh
 # Generates a rsa & ed25519 SSH Key and puts in in the .ssh directory
-sudo -u dennis ssh-keygen -t rsa -N "" -f /home/dennis/.ssh/id_rsa  >/dev/null 
-sudo -u dennis ssh-keygen -t ed25519 -N "" -f /home/dennis/.ssh/id_ed25519 >/dev/null 
+dennis_rsa_key_path="$dennis_ssh_dir/id_rsa"
+dennis_ed25519_key_path="$dennis_ssh_dir/id_ed25519"
 
+if [[ -f "$dennis_rsa_key_path" ]]; then
+echo "rsa ssh key already exists. Skipping..."
+else
+sudo -u dennis ssh-keygen -t rsa -N "" -f /home/dennis/.ssh/id_rsa  >/dev/null 
+fi
+if [[ -f "$dennis_ed25519_key_path" ]]; then
+echo "ed25519 key already exists. Skipping..."
+else
+sudo -u dennis ssh-keygen -t ed25519 -N "" -f /home/dennis/.ssh/id_ed25519 >/dev/null 
+fi
 
 
 # puts the content of the previosly created public keys and puts them into the authorized_keys" file
@@ -167,7 +178,9 @@ fi
 
 #creates the user with a default shell
 useradd -m -s /bin/bash "$user"
-
+done
+users=(aubrey captain snibbles brownie scotter sandy perrier cindy tiger yoda)
+for user in "${users[@]}"; do
 # Creates the user's home directory
 mkdir -p "/home/$user"
 # creats the .ssh folder if it does not already exist
@@ -175,6 +188,7 @@ if [ -d "$user_ssh_dir" ]; then
 echo "User $user already has an .ssh directory."
 else
 mkdir -p $user_ssh_dir 
+
 
 if [ $? -eq -0 ]; then
 echo ".ssh directory for user $user created"
@@ -199,10 +213,19 @@ chown "$user:$user" "$user_ssh_dir"
 chmod 700 "$user_ssh_dir"
 echo "user $user created succesfully."
 #generates RSA & ED25519 keypair
+rsa_user_key="$user_ssh_dir/id_rsa"
+ed25519_user_key="$user_ssh_dir/id_ed25519"
 
+if [[ -f "$rsa_user_key" ]]; then
+echo "rsa key for $user already exists. Skipping..."
+else
 sudo -u $user ssh-keygen -t rsa -N "" -f "$user_ssh_dir/id_rsa"  >/dev/null 
+fi
+if [[ -f "$ed25519_user_key" ]]; then
+echo "ed25519 key already exists for $user. Skipping..."
+else
 sudo -u $user ssh-keygen -t ed25519 -N "" -f "$user_ssh_dir/id_ed25519" >/dev/null 
-
+fi
 
 cat $user_ssh_dir/id_rsa.pub >> "$user_ssh_dir/authorized_keys"
 cat $user_ssh_dir/id_ed25519.pub >> "$user_ssh_dir/authorized_keys"
