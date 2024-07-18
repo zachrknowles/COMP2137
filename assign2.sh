@@ -32,7 +32,7 @@ echo "Apache2 is not installed. Installing ..."
 sudo apt-get update >/dev/null
 sudo apt-get install -y apache2 >/dev/null
 if [ $? -eq 0 ]; then
-echo "apache 2 has been installed"
+echo "Apache2 has been installed"
 else
 echo "problem installing apache2"
 fi
@@ -68,31 +68,31 @@ fi
 
 # Check and allow SSH (port 22)
 echo "Allowing SSH only on the mgnt network..."
-sudo ufw allow from 172.16.1.200/24 to any port 22
+sudo ufw allow to 172.16.1.200 port 22 >/dev/null
 
 
 
 #Check and allow HTTP (port 80)
 echo "Allowing HTTP..."
-sudo ufw allow 80/tcp
+sudo ufw allow 80/tcp  >/dev/null
 
 
 # Check and allow web proxy (port 3128)
 echo "allowing web proxy..."
-sudo ufw allow 3128
+sudo ufw allow 3128 >/dev/null
 
 #checks ufw status
 ufw_status=$(sudo ufw status | grep -i "Status: active")
 # enable UFW if it is not already enabled.
 if [ -z "$ufw_status" ]; then
-echo "UFW is not enabled Enabling"
-sudo ufw --force enable
+echo "UFW is not enabled Enabling..."
+sudo ufw --force enable >/dev/null
 else
 echo "UFW is already enabled."
 fi
 
 #reload ufw
-sudo ufw reload
+sudo ufw reload >/dev/null 2&>1
 echo "Firewall config complete."
 #checks if the user dennis exits and adds user if not
 if id "dennis" > /dev/null 2>&1; then
@@ -124,7 +124,7 @@ fi
 #checks if a authorised_keys file exists and creates it if not
 echo "checking to see if the authorized_keys file exists"
 authorized_keys_file="/home/dennis/.ssh/authorized_keys"
-if ! [ -f "$authorized_keys_file"  ]; then
+if  [ -f "$authorized_keys_file"  ]; then
 echo "the authorized_keys file exists skipping..."
 else
 echo "The authorized_keys file does not exist creating..."
