@@ -2,24 +2,24 @@
 #the purpose of this file is to delete all of the users created in assignment 2 so you can test the script again
 userhome="/home"
 deluser dennis
-rm -f $user_home/dennis
+rm -fr $user_home/dennis
 deluser aubrey
-rm -f $userhome/aubrey
+rm -fr $userhome/aubrey
 deluser captain
-rm -f $userhome/captain
+rm -fr $userhome/captain
 deluser snibbles
-rm -f $userhome/snibbles
+rm -fr $userhome/snibbles
 deluser brownie
-rm -f $userhome/brownie
+rm -fr $userhome/brownie
 deluser scotter
-rm -f $userhome/scotter
+rm -fr $userhome/scotter
 deluser sandy
-rm -f $userhome/sandy
+rm -fr $userhome/sandy
 deluser perrier
-rm -f $userhome/perrier
+rm -fr $userhome/perrier
 deluser cindy
-rm -f $userhome/cindy
+rm -fr $userhome/cindy
 deluser tiger 
-rm -f $userhome/tiger
+rm -fr $userhome/tiger
 deluser yoda
-rm -f $userhome/yoda
+rm -fr $userhome/yoda
