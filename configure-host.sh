@@ -7,8 +7,8 @@ case $opt in
 verbose) verbose=true ;;
 name) desired_name="$OPTARG" ;;
 ip) desired_ip="$OPTARG" ;;
-hostentry) desired_named="$OPTARG"; desired_ip="$OPTARG" ;;
-/? echo "Invalid option:" -$OPTARG >&2; exit 1 ;;
+hostentry) desired_name="$OPTARG"; desired_ip="$OPTARG" ;;
+/?) echo "Invalid option:" -$OPTARG >&2; exit 1 ;;
 esac
 done
 
@@ -23,13 +23,13 @@ echo "Error: $1" >&2
 }
 
 update_hostname(){
-currentname=$(hostname)
+current_name=$(hostname)
 
 if [[ "$desired_name" != "$current_name" ]]; then
   print_message "Updating hostname from '$current_name' to '$desired_name'"
   sudo hostnamectl set-hostname "$desired_name"
   sudo sed -i "s/$current_name/$desired_name/g" /etc/hosts
-  if [[ $? -eq 0]]; then
+  if [[ $? -eq 0 ]]; then
     print_messgae "Hostname updated successfully."
   else
   print_error "Error updating hostname in /etc/hosts"
@@ -43,7 +43,7 @@ update_ip(){
     interface="eth0"
     
     current_ip=$(ip addr show $interface | grep 'inet ' | cut -d ' ' -f2 | cut -d'/' -f1)
-    if [[ "$desired_ip" != "$current_ip"]]; then
+    if [[ "$desired_ip" != "$current_ip" ]]; then
     print_message "Updating IP address on interface '$interface' from '$current_ip' to '$desired_ip'"
     netplan_config=$(ls /etc/netplan/*.yaml | head -n 1)
     if [[ -z "$netplan_config" ]]; then
@@ -53,7 +53,7 @@ update_ip(){
   sudo netplan edit
   sei -i "/^ addresses:/a/   addresses: ['$desired_ip'/24']" "$netplan_config"
   sudo netplan apply
-  if [[ $? -eq 0]]; then
+  if [[ $? -eq 0 ]]; then
     print_message "IP Address updated Successfully."
   else
     print_error "Error updating IP Address using netplan"
@@ -66,7 +66,7 @@ fi
 update_hosts_entry(){
 current_entry=$(grep -E "^$disered_name/s+$desired_ip" /etc/hosts)
 
-if [[ -z "$curret_entry"]]; then\
+if [[ -z "$curret_entry" ]]; then\
   print_message "adding entry '$desired_name $desired_ip' to /etc/hosts"
   echo "$desired_ip $desired_name" | sudo tee -a /etc/hosts
   if [[?$ -eq 0 ]]; then 
