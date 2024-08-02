@@ -1,0 +1,35 @@
+---
+- name: Install Apache2 and Configure UFW
+  hosts: targets
+  remote_user: remoteadmin
+  tasks:
+    - name: Ensure Apache2 is installed
+      apt:
+        name: apache2
+        state: present
+
+    - name: Ensure UFW is installed
+      apt:
+        name: ufw
+        state: present
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
+        policy: allow
+      notify:
+        - Reload UFW
+
+    - name: Allow SSH through UFW
+      ufw:
+        rule: allow
+        name: OpenSSH
+
+    - name: Allow HTTP through UFW
+      ufw:
+        rule: allow
+        port: 80
+
+  handlers:
+    - name: Reload UFW
+      command: ufw reload
