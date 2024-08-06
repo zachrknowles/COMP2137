@@ -1,0 +1,40 @@
+---
+- name: Install MySQL and Configure Firewall on Target2
+  hosts: target2-mgmt
+  remote_user: remoteadmin
+  tasks:
+    - name: Install MySQL server
+      apt:
+        name: mysql-server
+        state: present
+        update_cache: yes
+
+    - name: Ensure MySQL service is started and enabled
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    - name: Install UFW
+      apt:
+        name: ufw
+        state: present
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
+
+    - name: Allow SSH on UFW
+      ufw:
+        rule: allow
+        name: OpenSSH
+
+    - name: Allow MySQL on UFW
+      ufw:
+        rule: allow
+        port: 3306
+        proto: tcp
+
+    - name: Ensure UFW is reloaded to apply new rules
+      command: ufw reload
+      ignore_errors: yes
