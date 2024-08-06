@@ -1,6 +1,6 @@
 ---
 - name: Install Apache2 and Configure UFW
-  hosts: targets
+  hosts: target1-mgmt
   remote_user: remoteadmin
   tasks:
     - name: Ensure Apache2 is installed
